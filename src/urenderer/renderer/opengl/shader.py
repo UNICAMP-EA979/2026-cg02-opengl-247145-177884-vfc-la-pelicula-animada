@@ -65,26 +65,29 @@ class Shader:
         full_source = vertex_shader_source+fragment_shader_source
         if full_source not in Shader._program_cache:
             # Compila o programa ainda não cacheado
-
-            ## SEU CÓDIGO AQUI ######################################################
             # Cria e compila o vertex shader
-            vertex_shader =
+            vertex_shader = GL.glCreateShader(GL.GL_VERTEX_SHADER)
+            GL.glShaderSource(vertex_shader, vertex_shader_source)
+            GL.glCompileShader(vertex_shader)
             #########################################################################
 
             vertex_shader = cast(int, vertex_shader)
             check_shader_compilation(vertex_shader, "VERTEX")
 
-            ## SEU CÓDIGO AQUI ######################################################
             # Cria e compila o fragment shader
-            fragment_shader =
+            fragment_shader = GL.glCreateShader(GL.GL_FRAGMENT_SHADER)
+            GL.glShaderSource(fragment_shader, fragment_shader_source)
+            GL.glCompileShader(fragment_shader)
             #########################################################################
 
             fragment_shader = cast(int, fragment_shader)
             check_shader_compilation(fragment_shader, "FRAGMENT")
 
-            ## SEU CÓDIGO AQUI ######################################################
             # Cria e linka o programa
-            shader_program =
+            shader_program = GL.glCreateProgram()
+            GL.glAttachShader(shader_program, vertex_shader)
+            GL.glAttachShader(shader_program, fragment_shader)
+            GL.glLinkProgram(shader_program)
             #########################################################################
 
             shader_program = cast(int, shader_program)
@@ -102,7 +105,8 @@ class Shader:
         '''
         Use the shader, activating it in the current rendering state
         '''
-        ## SEU CÓDIGO AQUI ######################################################
+        GL.glUseProgram(self.shader_program)
+  
         # Usa o programa compilado e linkado anteriormente no contexto atual
 
         #########################################################################
@@ -138,19 +142,19 @@ class Shader:
         '''
         location = self._get_uniform_location(name)
 
-        ## SEU CÓDIGO AQUI ######################################################
+
         # Defina o valor corretamente da uniforme para cada tipo
         # https://registry.khronos.org/OpenGL-Refpages/gl4/html/glUniform.xhtml
 
         if isinstance(value, bool):
-            ...
+            GL.glUniform1i(location, int(value))
         elif isinstance(value, int):
-            ...
+            GL.glUniform1i(location, value)
         elif isinstance(value, float):
-            ...
+            GL.glUniform1f(location, value)
         elif isinstance(value, np.ndarray):
             if value.dtype == np.float32 and value.shape == (4, 4):
-                ...
+                GL.glUniformMatrix4fv(location, 1, GL.GL_FALSE, value)
             else:
                 raise ValueError(f"Value type {type(value)} not supported")
         else:

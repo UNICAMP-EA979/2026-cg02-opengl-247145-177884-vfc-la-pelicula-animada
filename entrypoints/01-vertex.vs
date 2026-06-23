@@ -4,7 +4,7 @@
 // 
 // Converte a position para o clip space usando as transformações e armazena em gl_Position.
 
-// SEU CÓDIGO AQUI //////////////////////////////////////////////////////////////////////////
+
 
 void main()
 {
