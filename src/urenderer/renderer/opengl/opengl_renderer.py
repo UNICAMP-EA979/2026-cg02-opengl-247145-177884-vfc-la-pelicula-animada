@@ -47,12 +47,12 @@ class OpenGLRenderer(Renderer):
         super().__init__(screen_width, screen_height)
         self._executor = ProcessPoolExecutor(max_workers=1)
 
-        ## SEU CÓDIGO AQUI ######################################################
+        glfw.init()
+        window = glfw.create_window(screen_width, screen_height, "OpenGL Renderer", None, None)
+        glfw.make_context_current(window)
+
+        GL.glViewport(0, 0, screen_width, screen_height)
         # Inicializa o GLFW, core profile e OpenGL 3.3
-
-        #########################################################################
-
-        ## SEU CÓDIGO AQUI ######################################################
         # Cria a janela, associando ela ao contexto
         # e configurando o tamanho dela no OpenGl
 
@@ -93,7 +93,9 @@ class OpenGLRenderer(Renderer):
 
         glfw.set_window_title(self._window, name)
 
-        ## SEU CÓDIGO AQUI ######################################################
+        while not glfw.window_should_close(self._window):
+            GL.glClearColor(*self.background_color)
+            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         # Limpe os buffers de cor e profundidade (COLOR_BUFFER e DEPTH_BUFFER)
         # Para o de cor, utilize a cor self.background_color
 
@@ -128,7 +130,10 @@ class OpenGLRenderer(Renderer):
 
         material.use()
 
-        ## SEU CÓDIGO AQUI ######################################################
+        material.shader.set_uniform("modelTransformation", model_transformation.astype(np.float32))
+        material.shader.set_uniform("viewTransformation", self._view_matrix.astype(np.float32))
+        material.shader.set_uniform("projectionMatrix", self._projection_matrix.astype(np.float32)) 
+
         # Defina as uniforms 'modelTransformation', 'viewTransformation' e
         # 'projectionMatrix' do material.shader, as matrizes de transformação de
         # coordenadas 4x4.
@@ -169,7 +174,7 @@ class OpenGLRenderer(Renderer):
 
             self._executor.submit(save_frame, filename, frame)
 
-        ## SEU CÓDIGO AQUI ######################################################
+        glfw.swap_buffers(self._window)
         # Troque o buffer frontal e traseiro, mostrando o novo buffer renderizado
 
         #########################################################################
