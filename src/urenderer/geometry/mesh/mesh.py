@@ -83,7 +83,11 @@ class Mesh:
         The EBO contains the indices of each triangle.
         See https://wikis.khronos.org/opengl/Vertex_Specification#Index_buffers
         '''
-        ## SEU CÓDIGO AQUI ######################################################
+        GL.glBindVertexArray(self._vao)
+        GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self._ebo)
+        GL.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, self._index.nbytes,
+                        self._index, GL.GL_STATIC_DRAW)
+                
         # Faça bind do VAO e EBO e envie os dados do EBO
 
         #########################################################################
@@ -109,7 +113,9 @@ class Mesh:
         '''
         # 0=vertex (3), 1=uv (2), 2=color (3), 3=normal (3)
 
-        ## SEU CÓDIGO AQUI ######################################################
+        GL.glBindVertexArray(self._vao)
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self._vbo)
+     
         # Bind the VAO and VBO
 
         #########################################################################
@@ -136,16 +142,18 @@ class Mesh:
 
         data = np.hstack(components, dtype=np.float32)
 
-        ## SEU CÓDIGO AQUI ######################################################
+        GL.glBufferData(GL.GL_ARRAY_BUFFER, data.nbytes, data, GL.GL_STATIC_DRAW)
         # Envia os dados para o buffer
 
         # Configura os atributos do buffer
 
         if self._color is not None:
-            ...
+            GL.glVertexAttribPointer(2, 3, GL.GL_FLOAT, GL.GL_FALSE, n_item * 4, c_void_p(5 * 4))
+            GL.glEnableVertexAttribArray(2)
 
         if self._normal is not None:
-            ...
+            GL.glVertexAttribPointer(3, 3, GL.GL_FLOAT, GL.GL_FALSE, n_item * 4, c_void_p((5 + (3 if self._color is not None else 0)) * 4))
+            GL.glEnableVertexAttribArray(3)
 
         #########################################################################
 
@@ -156,7 +164,9 @@ class Mesh:
         '''
         Draws the stored mesh
         '''
-        ## SEU CÓDIGO AQUI ######################################################
+        GL.glBindVertexArray(self._vao)
+        GL.glDrawElements(GL.GL_TRIANGLES, self._n_element, GL.GL_UNSIGNED_INT, None)
+        
         # Realiza o bind do VAO ao contexto e desenha a geometria contida nele
 
         #########################################################################

@@ -31,7 +31,7 @@ def framebuffer_size_callback(window, width, height):
 glfw.set_framebuffer_size_callback(window, framebuffer_size_callback)
 
 # Cria o Vertex shader
-vertex_shader_source = '''
+vertex_shader_source = GL.glCreateShader(GL.GL_VERTEX_SHADER) 
 #version 330 core
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec2 uv;
@@ -43,14 +43,14 @@ void main()
    gl_Position = vec4(position.x, position.y, position.z, 1.0);
    color = vec3(uv, 0.0);
 }
-'''
+
 
 vertex_shader = GL.glCreateShader(GL.GL_VERTEX_SHADER)
 GL.glShaderSource(vertex_shader, vertex_shader_source)
 GL.glCompileShader(vertex_shader)
 
 # Cria o fragment shader
-fragment_shader_source = '''
+fragment_shader_source = GL.glCreateShader(GL.GL_FRAGMENT_SHADER)
 #version 330 core
 in vec3 color;
 
@@ -60,7 +60,7 @@ void main()
 {
     FragColor = vec4(color, 1.0f);
 } 
-'''
+
 
 fragment_shader = GL.glCreateShader(GL.GL_FRAGMENT_SHADER)
 GL.glShaderSource(fragment_shader, fragment_shader_source)
