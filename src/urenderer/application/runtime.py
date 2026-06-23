@@ -2,7 +2,6 @@ import time
 from collections import deque
 
 import numpy as np
-from numpy.typing import NDArray
 from urenderer.node import Camera, Node
 from urenderer.renderer import Renderer
 
@@ -75,10 +74,10 @@ class Runtime:
 
             # Traverse the node children
             for child in node.children:
-                ## SEU CÓDIGO AQUI #####################################################
                 # Crie a transformação do nó filho, concatenando com as transformações anteriores
 
-                #########################################################################
+                # Create child transformation
+                child_transformation = np.matmul(transformation, child.model_transform)
 
                 # Add child to the processing queue
                 nodes.append((child, child_transformation))
@@ -99,7 +98,7 @@ class Runtime:
         self._update(delta_time, time_since_start)
         self._render(capture)
 
-    def loop(self, n: int | None = None, constant_time: bool = False, capture: bool | list[int] | NDArray[np.int32] = False) -> None:
+    def loop(self, n: int | None = None, constant_time: bool = False, capture: bool | list[int] = False) -> None:
         '''
         Execute the application in a loop.
 
@@ -111,9 +110,9 @@ class Runtime:
 
         start_time = time.time()
         last_time = time.time()
-        current_time = time.time()
         i = 0
-        while (n is None or i < n) and not self._renderer.should_stop():
+        while n is None or i < n:
+            current_time = time.time()
 
             if constant_time:
                 delta_time = 1.0
@@ -121,17 +120,12 @@ class Runtime:
                 delta_time = last_time-current_time
 
             capture_frame = False
-            if isinstance(capture, list) or isinstance(capture, np.ndarray):
+            if isinstance(capture, list):
                 capture_frame = i in capture
             else:
                 capture_frame = capture
 
             self.iter(delta_time, current_time-start_time, capture_frame)
 
-            i += 1
-
-            last_time = current_time
-            current_time = time.time()
-            if last_time != current_time:
-                print(f"\r {1/(current_time-last_time)} fps",
-                      end="", flush=True)
+            if n is not None:
+                i += 1
